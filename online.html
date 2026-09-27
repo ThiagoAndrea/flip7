@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="it">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flip 7 Online</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -210,6 +214,7 @@ button small{display:block; font-size:12px; color:var(--muted); font-weight:400}
 
 /* ---------- overlay ---------- */
 .overlay{position:fixed; inset:0; background:rgba(7,11,22,.72); display:grid; place-items:center; padding:16px; z-index:10; animation:fade .2s}
+.overlay[hidden]{display:none}
 @keyframes fade{from{opacity:0}}
 .dialog{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; width:min(480px, 100%); max-height:calc(100vh - 32px); overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .dialog h2{font-family:'Uncial Antiqua', Georgia, serif; font-weight:400; font-size:24px; margin:0 0 4px; text-wrap:balance}

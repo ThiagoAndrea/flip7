@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="it">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flip 7</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -209,6 +213,7 @@ button small{display:block; font-size:12px; color:var(--muted); font-weight:400}
 
 /* ---------- overlay ---------- */
 .overlay{position:fixed; inset:0; background:rgba(7,11,22,.72); display:grid; place-items:center; padding:16px; z-index:10; animation:fade .2s}
+.overlay[hidden]{display:none}
 @keyframes fade{from{opacity:0}}
 .dialog{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; width:min(480px, 100%); max-height:calc(100vh - 32px); overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .dialog h2{font-family:'Bungee', Impact, sans-serif; font-weight:400; font-size:24px; margin:0 0 4px; text-wrap:balance}
@@ -708,7 +713,7 @@ function setupHTML(){
   <div class="field"><span class="lbl">Avversari</span><div class="seg">${seg}</div>
     <p class="hint">${BOTS.slice(0, S.cfg.opp).map(b => b.name).join(', ')}</p></div>
   <label class="check" for="optRisk"><input type="checkbox" id="optRisk" ${S.cfg.risk ? 'checked' : ''}> Mostra il rischio di sballare durante il tuo turno</label>
-  <div class="dlg-btns"><button data-act="close">Annulla</button><button class="primary" data-act="start">Inizia</button></div>`;
+  <div class="dlg-btns">${S.players.length ? '<button data-act="close">Annulla</button>' : ''}<button class="primary" data-act="start">Inizia</button></div>`;
 }
 
 function roundEndHTML(){
@@ -760,9 +765,12 @@ function render(){
 }
 
 /* ---------- input ---------- */
+// senza una partita in corso, chiudere un dialogo riporta alla schermata iniziale
+function closeModal(){ S.modal = S.players.length ? null : 'setup'; render(); }
+
 document.addEventListener('click', e => {
   const ov = $('#overlay');
-  if (e.target === ov && S.modal) { S.modal = null; render(); return; }
+  if (e.target === ov && S.modal) { closeModal(); return; }
   const b = e.target.closest('[data-act]');
   if (!b) return;
   const a = b.dataset.act;
@@ -772,7 +780,7 @@ document.addEventListener('click', e => {
   else if (a === 'next' && pr && pr.type === 'roundEnd' && pendingResolve) pendingResolve(true);
   else if (a === 'rules') { S.modal = 'rules'; render(); }
   else if (a === 'setup') { S.modal = 'setup'; render(); }
-  else if (a === 'close') { S.modal = null; render(); }
+  else if (a === 'close') { closeModal(); }
   else if (a === 'opp') { S.cfg.opp = +b.dataset.n; saveCfg(); render(); }
   else if (a === 'start') { S.modal = null; saveCfg(); newGame(); }
   else if (a === 'restart') { newGame(); }
@@ -783,7 +791,7 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
-  if (S.modal) { if (e.key === 'Escape') { S.modal = null; render(); } return; }
+  if (S.modal) { if (e.key === 'Escape') closeModal(); return; }
   const k = e.key.toLowerCase();
   const pr = S.prompt;
   if (pr && pr.type === 'turn' && pendingResolve) {
@@ -794,6 +802,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-newGame();
+S.modal = 'setup';
+render();
 })();
 </script>
